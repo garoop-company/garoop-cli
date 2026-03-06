@@ -27,6 +27,11 @@ go.work.sum
 # env file
 .env
 
+# release artifacts / local generated data
+dist/
+data/
+tokens/
+
 # Editor/IDE
 # .idea/
 # .vscode/

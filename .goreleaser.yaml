@@ -1,0 +1,165 @@
+project_name: garoop-cli
+
+before:
+  hooks:
+    - go mod tidy
+
+builds:
+  - id: garoop-cli
+    main: ./cmd/garoop-cli/main.go
+    binary: garoop-cli
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+      - android
+    goarch:
+      - amd64
+      - arm64
+    ignore:
+      - goos: android
+        goarch: amd64
+  - id: garuchan-cli
+    main: ./cmd/garuchan-cli/main.go
+    binary: garuchan-cli
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+      - android
+    goarch:
+      - amd64
+      - arm64
+    ignore:
+      - goos: android
+        goarch: amd64
+  - id: garooptv-cli
+    main: ./cmd/garooptv-cli/main.go
+    binary: garooptv-cli
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+      - android
+    goarch:
+      - amd64
+      - arm64
+    ignore:
+      - goos: android
+        goarch: amd64
+
+archives:
+  - id: garoop-cli-archive
+    ids:
+      - garoop-cli
+    name_template: "{{ .Binary }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    formats:
+      - tar.gz
+    format_overrides:
+      - goos: windows
+        formats:
+          - zip
+    files:
+      - README.md
+      - LICENSE*
+  - id: garuchan-cli-archive
+    ids:
+      - garuchan-cli
+    name_template: "{{ .Binary }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    formats:
+      - tar.gz
+    format_overrides:
+      - goos: windows
+        formats:
+          - zip
+    files:
+      - README.md
+      - LICENSE*
+  - id: garooptv-cli-archive
+    ids:
+      - garooptv-cli
+    name_template: "{{ .Binary }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    formats:
+      - tar.gz
+    format_overrides:
+      - goos: windows
+        formats:
+          - zip
+    files:
+      - README.md
+      - LICENSE*
+
+checksum:
+  name_template: checksums.txt
+
+snapshot:
+  version_template: "{{ incpatch .Version }}-next"
+
+changelog:
+  sort: asc
+  use: git
+
+brews:
+  - name: garoop-cli
+    ids:
+      - garoop-cli-archive
+    repository:
+      owner: yamashitadaiki
+      name: homebrew-tap
+      token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
+    commit_author:
+      name: garoop-cli-bot
+      email: bot@users.noreply.github.com
+    commit_msg_template: "chore(brew): update {{ .ProjectName }} to {{ .Version }}"
+    homepage: "https://github.com/yamashitadaiki/garoop-cli"
+    description: "CLI to automate Garoop social/media workflows"
+    license: "MIT"
+    directory: Formula
+    install: |
+      bin.install "garoop-cli"
+    test: |
+      system "#{bin}/garoop-cli", "--help"
+  - name: garuchan-cli
+    ids:
+      - garuchan-cli-archive
+    repository:
+      owner: yamashitadaiki
+      name: homebrew-tap
+      token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
+    commit_author:
+      name: garoop-cli-bot
+      email: bot@users.noreply.github.com
+    commit_msg_template: "chore(brew): update {{ .ProjectName }} to {{ .Version }}"
+    homepage: "https://github.com/yamashitadaiki/garoop-cli"
+    description: "Garuchan childcare and growth CLI"
+    license: "MIT"
+    directory: Formula
+    install: |
+      bin.install "garuchan-cli"
+    test: |
+      system "#{bin}/garuchan-cli", "--help"
+  - name: garooptv-cli
+    ids:
+      - garooptv-cli-archive
+    repository:
+      owner: yamashitadaiki
+      name: homebrew-tap
+      token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
+    commit_author:
+      name: garoop-cli-bot
+      email: bot@users.noreply.github.com
+    commit_msg_template: "chore(brew): update {{ .ProjectName }} to {{ .Version }}"
+    homepage: "https://github.com/yamashitadaiki/garoop-cli"
+    description: "GaroopTV GraphQL CLI"
+    license: "MIT"
+    directory: Formula
+    install: |
+      bin.install "garooptv-cli"
+    test: |
+      system "#{bin}/garooptv-cli", "--help"
