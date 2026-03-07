@@ -1,13 +1,58 @@
 # garoop-cli
 Garoop向けの公開CLIです。  
-用途別に 3 つのバイナリがあります。
+用途別に 3 つのバイナリがあります。通常の手打ちCLIとしても使えますが、このリポジトリでは AI エージェント経由での利用を基本運用にします。
 
 - `garoop-cli`: SNS投稿・認証・業務自動化
 - `garuchan-cli`: ガルちゃん育成・子育てログ
 - `garooptv-cli`: GaroopTVログインURL取得・GraphQL操作
 
-## Quick Start
-### 1. インストール（Homebrew）
+## 推奨利用形態
+- まずは `ChatGPT Plus` にログインして `Codex` からこのリポジトリを開き、AI エージェント経由で `garoop-cli` を実行する形を推奨
+- ローカルで完結させたい場合は、代替として `Qwen 3.5` をローカルにインストールして使う
+- スマホから使いたい場合は、`Android + Termux` で CLI を直接動かすか、`Codex web` に作業を依頼する形が現実的
+- 直接コマンドを手で打つより、エージェントに「何をしたいか」を渡して実行させる運用を優先する
+
+## Agent-Ready 方針
+このリポジトリは、`Codex` などの AI エージェントがこの CLI をインストールして実行することを前提にしています。
+
+- エージェントはまず `README.md` と `AGENTS.md` を読む
+- インストール後は `--help`、`auth status`、`auth verify` などの安全な確認コマンドから始める
+- 投稿や外部API操作は、明示されない限り `dry-run` を優先する
+- 実行時に必要なバイナリは `garoop-cli`、`garuchan-cli`、`garooptv-cli` の3つ
+
+### エージェント向けインストール契約
+エージェントがセットアップするときは、次のどちらかを優先します。
+
+1. Homebrew でインストールする
+2. `scripts/install.sh` でインストールする
+
+最小例:
+```bash
+brew install garoop-cli
+brew install garuchan-cli
+brew install garooptv-cli
+```
+
+または:
+```bash
+curl -fsSL https://raw.githubusercontent.com/yamashitadaiki/garoop-cli/main/scripts/install.sh | bash -s -- --binary all
+```
+
+### エージェント向け実行契約
+エージェントは次の順で扱う想定です。
+
+1. `garoop-cli --help` などで利用可能コマンドを確認する
+2. `garoop-cli auth status` などで現在状態を把握する
+3. 投稿や更新はまず `dry-run` で確認する
+4. ユーザーの明示があるときだけ `--execute` を付ける
+
+エージェントに依頼する例:
+- 「必要ならインストールしてから `garoop-cli auth status` を見て」
+- 「まず dry-run で X 投稿文を作って」
+- 「`garooptv-cli` で GraphQL の疎通確認をして」
+
+## Agent Quick Start
+### 1. CLI本体のインストール（Homebrew）
 ```bash
 brew tap yamashitadaiki/homebrew-tap
 brew install garoop-cli
@@ -15,7 +60,7 @@ brew install garuchan-cli
 brew install garooptv-cli
 ```
 
-### 1.1 インストール（install.sh / macOS・Linux・Android）
+### 1.1 CLI本体のインストール（install.sh / macOS・Linux・Android）
 ```bash
 curl -fsSL https://raw.githubusercontent.com/yamashitadaiki/garoop-cli/main/scripts/install.sh | bash
 
@@ -29,14 +74,79 @@ curl -fsSL https://raw.githubusercontent.com/yamashitadaiki/garoop-cli/main/scri
 curl -fsSL https://raw.githubusercontent.com/yamashitadaiki/garoop-cli/main/scripts/install.sh | bash -s -- --uninstall --binary all
 ```
 
-### 2. 利用可能コマンド確認
+### 2. まず推奨する使い方: ChatGPT Plus + Codex
+`ChatGPT Plus` を使っているユーザーが増えているため、最初の選択肢としては `Codex` を推奨します。はじめてでも順番どおりに進めれば使えます。
+
+#### 2.1 Codex のインストール
+```bash
+npm i -g @openai/codex
+codex --version
+```
+
+#### 2.2 Codex にログインするまでの手順
+1. `ChatGPT Plus` が有効な OpenAI アカウントを用意する
+2. ターミナルで次を実行する
+
+```bash
+codex --login
+```
+
+3. ブラウザが開いたら、`ChatGPT Plus` のアカウントでサインインする
+4. 画面の案内に従って `Sign in with ChatGPT` を完了する
+5. ターミナルに戻り、必要なら次でログイン状態を確認する
+
+```bash
+codex
+```
+
+補足:
+- メールアドレスやパスワードを CLI 引数で渡す必要はありません
+- 認証はブラウザで行われるので、難しい設定を手で書かなくて大丈夫です
+- うまくいかない場合は、いったん `codex logout` を実行してから `codex --login` をやり直してください
+
+#### 2.3 このリポジトリで実行する方法
+このリポジトリのディレクトリに移動してから `codex` を起動します。
+
+```bash
+cd /Users/yamashitadaiki/git_work/garoop-cli
+codex
+```
+
+起動後は、自然文でそのまま依頼して構いません。専門用語を知らなくても問題ありません。
+
+依頼例:
+- 「`garoop-cli auth status` を確認して」
+- 「安全な dry-run で X 投稿文を3案作って」
+- 「`garooptv-cli gql --query 'query { __typename }'` を実行して」
+
+### 3. ローカルAIエージェントで使う場合（Qwen 3.5）
+例: `Ollama` に `Qwen 3.5` を入れて、ローカルのエージェントからこのリポジトリを操作する
+
+```bash
+ollama pull qwen3.5-coder:14b
+ollama list
+garoop-cli --help
+```
+
+エージェントへの依頼例:
+- 「`garoop-cli` で X の下書きを作って dry-run して」
+- 「`garuchan-cli` で今日の育児ログを確認して」
+- 「`garooptv-cli` で GraphQL の疎通確認をして」
+
+### 4. 利用可能コマンド確認
 ```bash
 garoop-cli --help
 garuchan-cli --help
 garooptv-cli --help
 ```
 
-### 2.1 スマホ（Android/Termux）
+### 4.1 スマホで使う方法
+スマホからでも使えます。難しい操作を最初から全部覚える必要はありません。まずは次のどちらかを選べば十分です。
+
+- `Android + Termux`: スマホ上で `garoop-cli` を直接動かしたい人向け
+- `Codex web`: スマホのブラウザから AI に作業を依頼したい人向け
+
+#### Android / Termux で直接実行する
 ```bash
 pkg update -y
 pkg install -y curl tar
@@ -52,7 +162,21 @@ garoop-cli --help
 - `auth note login` はブラウザ自動操作のため、スマホよりPC実行を推奨です。
 - OAuth認証時に自動でブラウザが開けない場合は `--open-browser=false` を付けてURLを手動で開いてください。
 
-### 3. 最初の動作確認（安全な dry-run）
+#### スマホのブラウザから Codex を使う
+`ChatGPT Plus` を使っている場合は、`Codex web` に作業を依頼する運用もできます。スマホではこちらのほうが入りやすい場合があります。
+
+基本の流れ:
+1. `ChatGPT Plus` でサインインする
+2. `Codex web` を開く
+3. 必要に応じて GitHub を接続する
+4. このリポジトリに対して自然文で作業を依頼する
+
+依頼例:
+- 「`garoop-cli` の認証状態を確認したい」
+- 「X投稿の下書きを dry-run 前提で作って」
+- 「README のスマホ向け説明を改善して」
+
+### 5. 最初の動作確認（安全な dry-run）
 ```bash
 garoop-cli auth status
 garoop-cli auth verify
@@ -61,6 +185,11 @@ garoop-cli x reply-garoop 1234567890123456789 "いつもありがとうござい
 garuchan-cli birth --name ガルちゃん --model llama3.2
 garooptv-cli gql --query 'query { __typename }'
 ```
+
+AI エージェントに依頼する場合の基本方針:
+- まず `--help` や `auth status` で状況確認をさせる
+- 投稿・認証・API操作は原則 `dry-run` から始める
+- 実APIを叩く必要があるときだけ `--execute` を付ける
 
 ## デフォルト連携アカウント
 - X: `@garoop_company` (`https://x.com/garoop_company`)
@@ -174,6 +303,17 @@ export ALPACA_API_KEY=...
 export ALPACA_API_SECRET=...
 export ALPACA_BASE_URL=https://paper-api.alpaca.markets
 ```
+
+## Open Source
+このリポジトリはオープンソースとして公開できます。ライセンスは `MIT` です。
+
+公開利用時の注意:
+- APIキー、アクセストークン、Cookie、パスワードはリポジトリに含めないでください
+- 認証情報は環境変数やローカルの安全な保存先で管理してください
+- 外部サービス連携に必要な `X`、`YouTube`、`Instagram`、`Alpaca` などの認証情報は各利用者が用意してください
+- 各サービスのAPI利用規約とレート制限を確認してから実運用してください
+
+ライセンス本文は [`LICENSE`](/Users/yamashitadaiki/git_work/garoop-cli/LICENSE) を参照してください。
 
 ## 公開リリース（メンテナ向け）
 ```bash

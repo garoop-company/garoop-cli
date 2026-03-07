@@ -23,7 +23,7 @@ var (
 
 var rootCmd = &cobra.Command{
 	Use:   "garoop-cli",
-	Short: "Garoopに関する業務を自動化するCLIツールです",
+	Short: "Garoop業務をAIエージェント経由で自動化するCLIツールです",
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Printf("%s へようこそ！ --help でコマンドを確認してください。\n", cmd.Root().Name())
 	},
@@ -68,15 +68,15 @@ func applyProfile(profile string) {
 	switch profile {
 	case ProfileGaruchan:
 		rootCmd.Use = "garuchan-cli"
-		rootCmd.Short = "ガルちゃん育成と子育てを支援するCLIツールです"
+		rootCmd.Short = "ガルちゃん育成と子育てをAIエージェント経由で支援するCLIツールです"
 		allowedGroupIDs["garuchan_cli"] = true
 	case ProfileGaroopTV:
 		rootCmd.Use = "garooptv-cli"
-		rootCmd.Short = "GaroopTV連携のためのCLIツールです"
+		rootCmd.Short = "GaroopTV連携をAIエージェント経由で扱うCLIツールです"
 		allowedGroupIDs["garooptv_cli"] = true
 	default:
 		rootCmd.Use = "garoop-cli"
-		rootCmd.Short = "Garoopに関する業務を自動化するCLIツールです"
+		rootCmd.Short = "Garoop業務をAIエージェント経由で自動化するCLIツールです"
 		allowedGroupIDs["garoop_cli"] = true
 	}
 
