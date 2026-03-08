@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"garoop-cli/internal/social"
+	"github.com/yamashitadaiki/garoop-cli/internal/social"
 	"github.com/spf13/cobra"
 )
 

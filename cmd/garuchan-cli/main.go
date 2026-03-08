@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"garoop-cli/cmd"
+	"github.com/yamashitadaiki/garoop-cli/cmd"
 )
 
 func main() {

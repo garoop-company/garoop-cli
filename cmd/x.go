@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"strconv"
 
-	"garoop-cli/internal/content"
-	"garoop-cli/internal/social"
+	"github.com/yamashitadaiki/garoop-cli/internal/content"
+	"github.com/yamashitadaiki/garoop-cli/internal/social"
 	"github.com/spf13/cobra"
 )
 

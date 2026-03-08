@@ -6,7 +6,7 @@ import (
 	"os"
 	"strings"
 
-	"garoop-cli/internal/garoopapi"
+	"github.com/yamashitadaiki/garoop-cli/internal/garoopapi"
 	"github.com/spf13/cobra"
 )
 

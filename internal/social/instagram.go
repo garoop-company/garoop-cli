@@ -12,7 +12,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"garoop-cli/internal/authutil"
+	"github.com/yamashitadaiki/garoop-cli/internal/authutil"
 )
 
 type InstagramClient struct {

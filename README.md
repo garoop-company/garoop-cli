@@ -60,6 +60,13 @@ brew install garuchan-cli
 brew install garooptv-cli
 ```
 
+### 1.0 `go install` で入れる
+```bash
+go install github.com/yamashitadaiki/garoop-cli/cmd/garoop-cli@latest
+go install github.com/yamashitadaiki/garoop-cli/cmd/garuchan-cli@latest
+go install github.com/yamashitadaiki/garoop-cli/cmd/garooptv-cli@latest
+```
+
 ### 1.1 CLI本体のインストール（install.sh / macOS・Linux・Android）
 ```bash
 curl -fsSL https://raw.githubusercontent.com/yamashitadaiki/garoop-cli/main/scripts/install.sh | bash
@@ -268,6 +275,11 @@ export YOUTUBE_CLIENT_ID=...
 export YOUTUBE_CLIENT_SECRET=...
 garoop-cli auth youtube login --redirect-uri http://127.0.0.1:18767/auth/youtube/callback
 garoop-cli auth youtube refresh
+
+## OSS公開・配布
+- ソース公開後は `go install`、GitHub Releases、Homebrew で配布できます
+- リリース手順は `docs/OSS_RELEASE.md:1` にまとめています
+- ローカル確認は `make build`、タグ付き配布前の確認は `make release-check` を使えます
 ```
 
 ### Instagram OAuth

@@ -1,4 +1,4 @@
-module garoop-cli
+module github.com/yamashitadaiki/garoop-cli
 
 go 1.23.0
 

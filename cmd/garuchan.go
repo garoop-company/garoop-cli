@@ -6,8 +6,8 @@ import (
 	"strings"
 	"time"
 
-	"garoop-cli/internal/garuchan"
-	"garoop-cli/internal/social"
+	"github.com/yamashitadaiki/garoop-cli/internal/garuchan"
+	"github.com/yamashitadaiki/garoop-cli/internal/social"
 	"github.com/spf13/cobra"
 )
 

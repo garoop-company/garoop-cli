@@ -12,7 +12,7 @@ import (
 	"strconv"
 	"strings"
 
-	"garoop-cli/internal/authutil"
+	"github.com/yamashitadaiki/garoop-cli/internal/authutil"
 )
 
 type YouTubeClient struct {

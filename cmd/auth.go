@@ -19,7 +19,7 @@ import (
 	"strings"
 	"time"
 
-	"garoop-cli/internal/authutil"
+	"github.com/yamashitadaiki/garoop-cli/internal/authutil"
 	"github.com/chromedp/cdproto/network"
 	"github.com/chromedp/chromedp"
 	"github.com/dghubble/oauth1"

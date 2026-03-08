@@ -5,7 +5,7 @@ import (
 	"strings"
 	"time"
 
-	"garoop-cli/internal/parenting"
+	"github.com/yamashitadaiki/garoop-cli/internal/parenting"
 	"github.com/spf13/cobra"
 )
 

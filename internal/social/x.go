@@ -8,7 +8,7 @@ import (
 	"os"
 	"strings"
 
-	"garoop-cli/internal/authutil"
+	"github.com/yamashitadaiki/garoop-cli/internal/authutil"
 	"github.com/ChimeraCoder/anaconda"
 	"github.com/dghubble/oauth1"
 	twitterv2 "github.com/g8rswimmer/go-twitter/v2"
