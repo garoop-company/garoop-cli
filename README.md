@@ -323,8 +323,6 @@ export ALPACA_BASE_URL=https://paper-api.alpaca.markets
 - 外部サービス連携に必要な `X`、`YouTube`、`Instagram`、`Alpaca` などの認証情報は各利用者が用意してください
 - 各サービスのAPI利用規約とレート制限を確認してから実運用してください
 
-ライセンス本文は [`LICENSE`](/Users/yamashitadaiki/git_work/garoop-cli/LICENSE) を参照してください。
-
 ## 公開リリース（メンテナ向け）
 ```bash
 git tag v0.1.0
