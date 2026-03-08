@@ -31,6 +31,9 @@ go.work.sum
 dist/
 data/
 tokens/
+garoop-cli
+garooptv-cli
+garuchan-cli
 
 # Editor/IDE
 # .idea/

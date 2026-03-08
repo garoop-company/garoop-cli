@@ -241,6 +241,16 @@ garooptv-cli auth-url --provider tiktok --redirect-url https://create.garoop.jp
 garooptv-cli auth-url --provider x --redirect-url https://create.garoop.jp
 garooptv-cli session-set-cookie --cookie "_session=...; ..."
 garooptv-cli gql --query-file ./query.graphql --variables-file ./vars.json
+garooptv-cli social auth-url --platform instagram --redirect-url https://create.garoop.jp
+garooptv-cli social connections
+garooptv-cli social instagram-media --limit 10
+garooptv-cli social instagram-resolve --input https://www.instagram.com/p/ABC123/
+garooptv-cli social x-debug --tweet-id 1234567890
+garooptv-cli social x-reply --tweet-id 1234567890 --text "ありがとうございます"
+garooptv-cli social youtube-comment --video-id abc123 --text "ナイス動画です"
+
+# 実行系は既定で dry-run。実行するときだけ --execute を付ける
+garooptv-cli social x-like --tweet-id 1234567890 --execute
 ```
 
 ## 認証セットアップ
