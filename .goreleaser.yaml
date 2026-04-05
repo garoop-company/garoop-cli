@@ -105,6 +105,12 @@ changelog:
   sort: asc
   use: git
 
+release:
+  github:
+    owner: garoop-company
+    name: garoop-cli
+  replace_existing_artifacts: true
+
 brews:
   - name: garoop-cli
     ids:
