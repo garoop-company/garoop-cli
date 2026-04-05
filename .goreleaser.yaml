@@ -110,14 +110,14 @@ brews:
     ids:
       - garoop-cli-archive
     repository:
-      owner: yamashitadaiki
+      owner: garoop-company
       name: homebrew-tap
       token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
     commit_author:
       name: garoop-cli-bot
       email: bot@users.noreply.github.com
     commit_msg_template: "chore(brew): update {{ .ProjectName }} to {{ .Version }}"
-    homepage: "https://github.com/yamashitadaiki/garoop-cli"
+    homepage: "https://github.com/garoop-company/garoop-cli"
     description: "CLI to automate Garoop social/media workflows"
     license: "MIT"
     directory: Formula
@@ -129,14 +129,14 @@ brews:
     ids:
       - garuchan-cli-archive
     repository:
-      owner: yamashitadaiki
+      owner: garoop-company
       name: homebrew-tap
       token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
     commit_author:
       name: garoop-cli-bot
       email: bot@users.noreply.github.com
     commit_msg_template: "chore(brew): update {{ .ProjectName }} to {{ .Version }}"
-    homepage: "https://github.com/yamashitadaiki/garoop-cli"
+    homepage: "https://github.com/garoop-company/garoop-cli"
     description: "Garuchan childcare and growth CLI"
     license: "MIT"
     directory: Formula
@@ -148,14 +148,14 @@ brews:
     ids:
       - garooptv-cli-archive
     repository:
-      owner: yamashitadaiki
+      owner: garoop-company
       name: homebrew-tap
       token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
     commit_author:
       name: garoop-cli-bot
       email: bot@users.noreply.github.com
     commit_msg_template: "chore(brew): update {{ .ProjectName }} to {{ .Version }}"
-    homepage: "https://github.com/yamashitadaiki/garoop-cli"
+    homepage: "https://github.com/garoop-company/garoop-cli"
     description: "GaroopTV GraphQL CLI"
     license: "MIT"
     directory: Formula

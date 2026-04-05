@@ -11,9 +11,9 @@
 These commands work after the repository is public and tagged:
 
 ```bash
-go install github.com/yamashitadaiki/garoop-cli/cmd/garoop-cli@latest
-go install github.com/yamashitadaiki/garoop-cli/cmd/garuchan-cli@latest
-go install github.com/yamashitadaiki/garoop-cli/cmd/garooptv-cli@latest
+go install github.com/garoop-company/garoop-cli/cmd/garoop-cli@latest
+go install github.com/garoop-company/garoop-cli/cmd/garuchan-cli@latest
+go install github.com/garoop-company/garoop-cli/cmd/garooptv-cli@latest
 ```
 
 ## 3. GitHub Releases
@@ -44,7 +44,7 @@ make snapshot
 
 `.goreleaser.yaml` is already configured to publish formulas to:
 
-- `yamashitadaiki/homebrew-tap`
+- `garoop-company/homebrew-tap`
 
 Required environment variable:
 
@@ -55,7 +55,7 @@ export HOMEBREW_TAP_GITHUB_TOKEN=...
 After a tagged release with GoReleaser, users can install with:
 
 ```bash
-brew tap yamashitadaiki/homebrew-tap
+brew tap garoop-company/homebrew-tap
 brew install garoop-cli
 brew install garuchan-cli
 brew install garooptv-cli
@@ -71,7 +71,7 @@ GitHub Actions workflow:
 Recommended secret setup:
 
 ```bash
-HOMEBREW_TAP_GITHUB_TOKEN=<a GitHub token that can push to yamashitadaiki/homebrew-tap>
+HOMEBREW_TAP_GITHUB_TOKEN=<a GitHub token that can push to garoop-company/homebrew-tap>
 ```
 
 Release flow:

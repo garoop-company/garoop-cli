@@ -28,19 +28,19 @@ Garoop向けの公開CLIです。
 
 最小例:
 ```bash
-brew tap yamashitadaiki/homebrew-tap
+brew tap garoop-company/homebrew-tap
 brew install garoop-cli
 brew install garuchan-cli
 brew install garooptv-cli
 ```
 
 補足:
-- 上の `brew install ...` は `yamashitadaiki/homebrew-tap` を `brew tap` 済みであることが前提です
-- 未 tap の環境では、先に `brew tap yamashitadaiki/homebrew-tap` を実行してください
+- 上の `brew install ...` は `garoop-company/homebrew-tap` を `brew tap` 済みであることが前提です
+- 未 tap の環境では、先に `brew tap garoop-company/homebrew-tap` を実行してください
 
 または:
 ```bash
-curl -fsSL https://raw.githubusercontent.com/yamashitadaiki/garoop-cli/main/scripts/install.sh | bash -s -- --binary all
+curl -fsSL https://raw.githubusercontent.com/garoop-company/garoop-cli/main/scripts/install.sh | bash -s -- --binary all
 ```
 
 ### エージェント向け実行契約
@@ -59,13 +59,13 @@ curl -fsSL https://raw.githubusercontent.com/yamashitadaiki/garoop-cli/main/scri
 ## Agent Quick Start
 ### 1. CLI本体のインストール（Homebrew）
 ```bash
-brew tap yamashitadaiki/homebrew-tap
+brew tap garoop-company/homebrew-tap
 brew install garoop-cli
 brew install garuchan-cli
 brew install garooptv-cli
 ```
 
-すでに `yamashitadaiki/homebrew-tap` を追加済みなら、次だけでも構いません。
+すでに `garoop-company/homebrew-tap` を追加済みなら、次だけでも構いません。
 
 ```bash
 brew install garoop-cli
@@ -73,27 +73,27 @@ brew install garuchan-cli
 brew install garooptv-cli
 ```
 
-Homebrew 配布は GoReleaser 経由で行います。タグ付きリリース後に `yamashitadaiki/homebrew-tap` の Formula が更新される前提です。
+Homebrew 配布は GoReleaser 経由で行います。タグ付きリリース後に `garoop-company/homebrew-tap` の Formula が更新される前提です。
 
 ### 1.0 `go install` で入れる
 ```bash
-go install github.com/yamashitadaiki/garoop-cli/cmd/garoop-cli@latest
-go install github.com/yamashitadaiki/garoop-cli/cmd/garuchan-cli@latest
-go install github.com/yamashitadaiki/garoop-cli/cmd/garooptv-cli@latest
+go install github.com/garoop-company/garoop-cli/cmd/garoop-cli@latest
+go install github.com/garoop-company/garoop-cli/cmd/garuchan-cli@latest
+go install github.com/garoop-company/garoop-cli/cmd/garooptv-cli@latest
 ```
 
 ### 1.1 CLI本体のインストール（install.sh / macOS・Linux・Android）
 ```bash
-curl -fsSL https://raw.githubusercontent.com/yamashitadaiki/garoop-cli/main/scripts/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/garoop-company/garoop-cli/main/scripts/install.sh | bash
 
 # 3つすべて入れる
-curl -fsSL https://raw.githubusercontent.com/yamashitadaiki/garoop-cli/main/scripts/install.sh | bash -s -- --binary all
+curl -fsSL https://raw.githubusercontent.com/garoop-company/garoop-cli/main/scripts/install.sh | bash -s -- --binary all
 
 # 既存バイナリを上書き
-curl -fsSL https://raw.githubusercontent.com/yamashitadaiki/garoop-cli/main/scripts/install.sh | bash -s -- --binary garoop-cli --force
+curl -fsSL https://raw.githubusercontent.com/garoop-company/garoop-cli/main/scripts/install.sh | bash -s -- --binary garoop-cli --force
 
 # アンインストール
-curl -fsSL https://raw.githubusercontent.com/yamashitadaiki/garoop-cli/main/scripts/install.sh | bash -s -- --uninstall --binary all
+curl -fsSL https://raw.githubusercontent.com/garoop-company/garoop-cli/main/scripts/install.sh | bash -s -- --uninstall --binary all
 ```
 
 ### 2. まず推奨する使い方: ChatGPT Plus + Codex
@@ -182,7 +182,7 @@ pkg update -y
 pkg install -y curl tar
 
 # install.shで自動インストール
-curl -fsSL https://raw.githubusercontent.com/yamashitadaiki/garoop-cli/main/scripts/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/garoop-company/garoop-cli/main/scripts/install.sh | bash
 
 garoop-cli --help
 ```
