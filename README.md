@@ -8,7 +8,7 @@ Garoop向けの公開CLIです。
 
 ## 推奨利用形態
 - まずは `ChatGPT Plus` にログインして `Codex` からこのリポジトリを開き、AI エージェント経由で `garoop-cli` を実行する形を推奨
-- ローカルで完結させたい場合は、代替として `Qwen 3.5` をローカルにインストールして使う
+- ローカルで完結させたい場合は、代替として `Qwen 3.5` または `Gemma 4` 系をローカルにインストールして使う
 - スマホから使いたい場合は、`Android + Termux` で CLI を直接動かすか、`Codex web` に作業を依頼する形が現実的
 - 直接コマンドを手で打つより、エージェントに「何をしたいか」を渡して実行させる運用を優先する
 
@@ -28,10 +28,15 @@ Garoop向けの公開CLIです。
 
 最小例:
 ```bash
+brew tap yamashitadaiki/homebrew-tap
 brew install garoop-cli
 brew install garuchan-cli
 brew install garooptv-cli
 ```
+
+補足:
+- 上の `brew install ...` は `yamashitadaiki/homebrew-tap` を `brew tap` 済みであることが前提です
+- 未 tap の環境では、先に `brew tap yamashitadaiki/homebrew-tap` を実行してください
 
 または:
 ```bash
@@ -59,6 +64,16 @@ brew install garoop-cli
 brew install garuchan-cli
 brew install garooptv-cli
 ```
+
+すでに `yamashitadaiki/homebrew-tap` を追加済みなら、次だけでも構いません。
+
+```bash
+brew install garoop-cli
+brew install garuchan-cli
+brew install garooptv-cli
+```
+
+Homebrew 配布は GoReleaser 経由で行います。タグ付きリリース後に `yamashitadaiki/homebrew-tap` の Formula が更新される前提です。
 
 ### 1.0 `go install` で入れる
 ```bash
@@ -126,14 +141,22 @@ codex
 - 「安全な dry-run で X 投稿文を3案作って」
 - 「`garooptv-cli gql --query 'query { __typename }'` を実行して」
 
-### 3. ローカルAIエージェントで使う場合（Qwen 3.5）
-例: `Ollama` に `Qwen 3.5` を入れて、ローカルのエージェントからこのリポジトリを操作する
+### 3. ローカルAIエージェントで使う場合（Qwen 3.5 / Gemma 4）
+例: `Ollama` に `Qwen 3.5` または `Gemma 4` 系を入れて、ローカルのエージェントからこのリポジトリを操作する
 
 ```bash
 ollama pull qwen3.5-coder:14b
+# 例: Gemma 4 系を使う場合
+ollama pull gemma4:e4b
 ollama list
 garoop-cli --help
 ```
+
+モデル選択の目安:
+- コード生成寄りなら `qwen3.5-coder` 系
+- 軽めにローカル実行したいなら `gemma4:e2b` や `gemma4:e4b` が候補
+- より重いローカル環境なら `gemma4:26b` や `gemma4:31b` も候補
+- 実際に使うタグ名は `ollama pull gemma4:e4b` のように明示指定する運用を推奨します
 
 エージェントへの依頼例:
 - 「`garoop-cli` で X の下書きを作って dry-run して」

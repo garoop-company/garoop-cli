@@ -61,6 +61,28 @@ brew install garuchan-cli
 brew install garooptv-cli
 ```
 
+GitHub Actions workflow:
+
+- `.github/workflows/release.yml` runs on `v*` tags
+- It runs `go test ./...`
+- Then it executes `goreleaser release --clean`
+- `HOMEBREW_TAP_GITHUB_TOKEN` must be set in repository secrets
+
+Recommended secret setup:
+
+```bash
+HOMEBREW_TAP_GITHUB_TOKEN=<a GitHub token that can push to yamashitadaiki/homebrew-tap>
+```
+
+Release flow:
+
+```bash
+git tag v0.1.0
+git push origin v0.1.0
+```
+
+This publishes GitHub Release artifacts and updates the Homebrew tap formulas.
+
 ## 5. Quick checklist
 
 ```bash
