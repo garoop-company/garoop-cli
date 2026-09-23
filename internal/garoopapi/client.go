@@ -19,7 +19,9 @@ const sessionPath = "tokens/garoop_session.json"
 type Client struct {
 	Endpoint string
 	Cookie   string
-	client   *http.Client
+	// AdminToken はスタッフ用の操作（提出物の確認など）でだけ使う。NewAdminClient 以外では空。
+	AdminToken string
+	client     *http.Client
 }
 
 type Response struct {
@@ -51,6 +53,18 @@ func NewClient() *Client {
 	}
 }
 
+// NewAdminClient は GAROOP_ADMIN_SECRET（kids_api の GRAPHQL_ADMIN_SECRET）を付けたクライアントを返す。
+// スタッフ用コマンドだけが使う。通常のコマンドに秘密鍵を載せないため、NewClient とは分けている。
+func NewAdminClient() (*Client, error) {
+	token := strings.TrimSpace(os.Getenv("GAROOP_ADMIN_SECRET"))
+	if token == "" {
+		return nil, fmt.Errorf("スタッフ用の操作です。GAROOP_ADMIN_SECRET を設定してください")
+	}
+	c := NewClient()
+	c.AdminToken = token
+	return c, nil
+}
+
 func SaveCookie(cookie string) error {
 	payload := map[string]string{
 		"cookie":   strings.TrimSpace(cookie),
@@ -76,6 +90,9 @@ func (c *Client) Query(query string, variables map[string]any) (*Response, error
 	req.Header.Set("Content-Type", "application/json")
 	if strings.TrimSpace(c.Cookie) != "" {
 		req.Header.Set("Cookie", c.Cookie)
+	}
+	if c.AdminToken != "" {
+		req.Header.Set("Authorization", "Bearer "+c.AdminToken)
 	}
 
 	resp, err := c.client.Do(req)

@@ -126,7 +126,7 @@ brews:
       email: bot@users.noreply.github.com
     commit_msg_template: "chore(brew): update {{ .ProjectName }} to {{ .Version }}"
     homepage: "https://github.com/garoop-company/garoop-cli"
-    description: "CLI to automate Garoop social/media workflows"
+    description: "CLI for AI agents to operate Garoop services (TV, Kids, Land, School, Novel) and social workflows"
     license: "MIT"
     directory: Formula
     install: |

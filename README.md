@@ -4,7 +4,9 @@ Garoop向けの公開CLIです。
 
 - `garoop-cli`: SNS投稿・認証・業務自動化
 - `garuchan-cli`: ガルちゃん育成・子育てログ
-- `garooptv-cli`: GaroopTVログインURL取得・GraphQL操作
+- `garooptv-cli`: GaroopTVログインURL取得・GraphQL操作・番組表
+
+加えて、GaroopTV / Kids / Land / School / Novel / Baby / ガルちゃんスタジオを操作する「Garoopサービス操作」コマンドがあります（後述）。
 
 ## 推奨利用形態
 - まずは `ChatGPT Plus` にログインして `Codex` からこのリポジトリを開き、AI エージェント経由で `garoop-cli` を実行する形を推奨
@@ -281,6 +283,93 @@ garooptv-cli social youtube-comment --video-id abc123 --text "ナイス動画で
 
 # 実行系は既定で dry-run。実行するときだけ --execute を付ける
 garooptv-cli social x-like --tweet-id 1234567890 --execute
+```
+
+## Garoopサービス操作（AIエージェント向け）
+Garoop の各サービスを AI エージェントから操作するコマンド群です。`garoop-cli --help` の「Garoopサービス操作」に表示されます。
+
+| サービス | コマンド | できること |
+|---|---|---|
+| 共通 | `me` / `agent manifest` | ログイン確認 / 全コマンドのJSONマニフェスト |
+| GaroopTV | `tv channels` `tv schedule` `tv propose` | 番組表の閲覧（今放送中の番組も）、扱ってほしいコンテンツの提案 |
+| おうちミッション | `kids family children/unlock/create/list/report/review/delete` | 保護者が子どもにやってほしいことを登録 → 子どもが報告 → 保護者が承認してごほうびのガル |
+| Garoop Kids | `kids mission list/get/accept/accepted/submit` `kids lesson list/branches/clear/comment` | ミッション閲覧・応募・成果物提出、レッスン |
+| Garoop Land | `land game list` `land game submit` | 自作HTML5ゲームの投稿 |
+| Garoop School | `school assignment submit/list` `school contact` | 課題提出と確認状況、問い合わせ |
+| Garoop Novel | `novel list/get/template/submit` | 自作小説の投稿（音声付きも可：`--audio-dir`） |
+| 提出物 | `submission mine` | 課題・作品・小説・番組提案の確認状況 |
+| Garoop Baby | `baby list/public/get/chat/grow` | オンラインの赤ちゃんとの会話・育成 |
+| ガルちゃんスタジオ | `studio image/text/video/voice/upload/youtube-upload` | ガルちゃん画像・口パク動画・音声・文章の生成 |
+| スタッフ用 | `submission list/review` `land game publish` `novel publish` `tv schedule-add` `studio youtube-upload` | 提出物の確認・承認、承認済み作品の公開（garoop-data へPR）、番組表の編集 |
+
+表示されるバイナリ: `tv` は `garoop-cli` と `garooptv-cli`、`baby` / `studio` は `garoop-cli` と `garuchan-cli`、それ以外は `garoop-cli`。
+
+### 書き込みの仕組み
+- すべての書き込み系は既定で dry-run。`--execute` を付けたときだけ実行します
+- **ログイン**: ブラウザでログイン後の `sessionId` Cookie を保存して使います
+  ```bash
+  garooptv-cli session-set-cookie --cookie "sessionId=..."
+  garoop-cli me   # ログイン確認
+  ```
+- **提出物（課題・ミッション成果物・ゲーム・小説・番組提案）**: api.garoop.jp の提出受付に送られ、スタッフが確認します。ファイルは自分専用の領域（`uploads/users/<userId>/`）にアップロードされます
+- **おうちミッション**: Garoop Pay で子どもを登録済みであることが前提です。登録・承認・削除には保護者の合言葉が必要です（`kids family unlock`。35分有効。`GAROOP_PARENT_PASSCODE` か標準入力で渡し、引数では渡しません）
+- **スタッフ用**: `GAROOP_ADMIN_SECRET`（kids_api の `GRAPHQL_ADMIN_SECRET`）が必要です。公開（garoop-data へのPR）には `gh auth login` か `GITHUB_TOKEN` も必要です。garoop-data は公開リポジトリなので、子どもの個人情報を含めないでください
+- **動画・音声生成**: ローカルの `garuchan_creator`（`make up`）と VOICEVOX を使います。MP3 変換には `ffmpeg` が必要です
+
+### 例
+```bash
+# 番組表: 今なにやってる？
+garooptv-cli tv schedule --now
+# 番組を提案
+garooptv-cli tv propose --title "宇宙飛行士の1日" --description "ISSでの生活を子ども向けに" --channel 1 --execute
+
+# おうちミッション（保護者）
+garoop-cli kids family unlock                    # 合言葉を入力
+garoop-cli kids family create --title "くつをそろえよう" --detail "げんかんのくつを全部そろえる" \
+  --reward-garu 30 --reward-note "シール" --due 2026-10-31 --execute
+# 子どもが報告 → 保護者が承認（ガルが渡る）
+garoop-cli kids family report 6 --comment "そろえたよ" --photo ./kutsu.jpg --execute
+garoop-cli kids family review 6 --approve --comment "えらい！" --execute
+
+# ミッションの成果物を提出（承認されるとポイント）
+garoop-cli kids mission submit 20 --file ./work.png --execute
+
+# 自作ゲームを投稿（フォルダ直下に index.html。zip にまとめて送信）
+garoop-cli land game submit ./my-game --title "スペースジャンプ" \
+  --description "ガルちゃんが星を集めるゲーム" --category action --author たろう --execute
+
+# 課題提出（複数ファイル可）
+garoop-cli school assignment submit --course-id ai-startup-01 --course-title "AI起業 第1回" \
+  --file ./pitch.pdf --file ./demo.mp4 --execute
+
+# 小説を投稿（音声付き）
+garoop-cli novel template > draft.json
+garoop-cli novel submit --file draft.json --audio-dir ./voices --execute
+
+# 確認状況
+garoop-cli submission mine
+
+# ガルちゃん画像・動画
+garuchan-cli studio image --prompt "ガルちゃんが宇宙服で月面ジャンプ" --out moon.png --execute
+garuchan-cli studio video --text "こんにちは！ガルちゃんだよ" --out hello.mp4
+
+# スタッフ: 確認して承認
+GAROOP_ADMIN_SECRET=... garoop-cli submission list --kind GAME
+GAROOP_ADMIN_SECRET=... garoop-cli submission review 12 --approve --comment "公開します" --execute
+garoop-cli land game publish ./my-game --id space-jump --title "スペースジャンプ" --description "..." --execute
+```
+
+### 追加の環境変数
+```bash
+export GAROOP_GRAPHQL_ENDPOINT=https://api.garoop.jp/query  # 既定値
+export GAROOP_COOKIE="sessionId=..."                      # session-set-cookie の代わり
+export GAROOP_PARENT_PASSCODE=...                         # kids family unlock 用（任意）
+export GAROOP_ADMIN_SECRET=...                            # スタッフ用
+export GAROOP_DATA_BASE_URL=https://data.garoop.jp
+export GAROOP_DATA_REPO=garoop-company/garoop-data         # スタッフの公開用
+export GITHUB_TOKEN=...                                   # gh auth login 済みなら不要
+export GARUCHAN_CREATOR_URL=http://localhost:3000
+export VOICEVOX_ENGINE_URL=http://127.0.0.1:50021
 ```
 
 ## 認証セットアップ

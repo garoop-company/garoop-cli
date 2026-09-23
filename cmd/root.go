@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/spf13/cobra"
 )
@@ -24,6 +25,9 @@ var (
 var rootCmd = &cobra.Command{
 	Use:   "garoop-cli",
 	Short: "Garoop業務をAIエージェント経由で自動化するCLIツールです",
+	// エラー時に usage 全文を出さない（AIエージェントが読むログを短く保つ）。エラー本文は main で表示する
+	SilenceUsage:  true,
+	SilenceErrors: true,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Printf("%s へようこそ！ --help でコマンドを確認してください。\n", cmd.Root().Name())
 	},
@@ -42,6 +46,10 @@ func init() {
 		&cobra.Group{
 			ID:    "garooptv_cli",
 			Title: "garooptv-cli",
+		},
+		&cobra.Group{
+			ID:    groupServices,
+			Title: "Garoopサービス操作",
 		},
 	)
 
@@ -84,6 +92,22 @@ func applyProfile(profile string) {
 		if c.GroupID == "" {
 			continue
 		}
+		if profiles, ok := c.Annotations[annotationProfiles]; ok {
+			c.Hidden = !containsProfile(profiles, profile)
+			continue
+		}
 		c.Hidden = !allowedGroupIDs[c.GroupID]
 	}
+}
+
+func containsProfile(profiles, profile string) bool {
+	if profile != ProfileGaruchan && profile != ProfileGaroopTV {
+		profile = ProfileGaroop
+	}
+	for _, p := range strings.Split(profiles, ",") {
+		if strings.TrimSpace(p) == profile {
+			return true
+		}
+	}
+	return false
 }

@@ -23,8 +23,32 @@
 - 書き込み系や外部API実行は、ユーザーの明示がない限り `dry-run` を優先する
 - `garoop-cli` は SNS投稿・認証・業務自動化
 - `garuchan-cli` は ガルちゃん育成・子育てログ
-- `garooptv-cli` は GaroopTV の認証URL生成と GraphQL 操作
+- `garooptv-cli` は GaroopTV の認証URL生成と GraphQL 操作、番組表
+- 使えるコマンドは `garoop-cli agent manifest` でJSON取得できる（`mutates: true` は書き込み系）
 
-## ローカルLLM向け
-- 例として `Ollama` 上の `qwen3.5-coder` 系または `gemma4` 系モデルを想定してよい
-- リポジトリを開いた状態で、このファイルと `README.md` を参照してコマンドを生成する
+## Garoopサービス操作の対応表
+| ユーザーの依頼例 | コマンド |
+|---|---|
+| 「今GaroopTVで何やってる？」「明日の番組表」 | `garooptv-cli tv schedule --now` / `tv schedule --date YYYY-MM-DD` |
+| 「GaroopTVでこんな番組をやってほしい」 | `garooptv-cli tv propose --title ... --description ...` |
+| 「子どもにお手伝いのミッションを出したい」 | `garoop-cli kids family unlock` → `kids family create --title ... --reward-garu ...` |
+| 「子どもがミッションできたって」「承認して」 | `kids family report ID` / `kids family review ID --approve` |
+| 「ミッション一覧」「このミッションに応募」 | `garoop-cli kids mission list` / `kids mission accept ID` |
+| 「この作品をミッションに提出」 | `garoop-cli kids mission submit ID --file ...` |
+| 「作ったゲームを Garoop Land に載せたい」 | `garoop-cli land game submit DIR --title ... --description ...` |
+| 「スクールの課題を出して」 | `garoop-cli school assignment submit --course-id ... --course-title ... --file ...` |
+| 「書いた小説を載せて（音声付きで）」 | `garoop-cli novel template` で下書き → `novel submit --file ... [--audio-dir ...]` |
+| 「出したものはどうなった？」 | `garoop-cli submission mine` |
+| 「ガルちゃんの画像／動画を作って」 | `garuchan-cli studio image --prompt ...` / `studio video --text ...` |
+| 「うちの赤ちゃんと話したい」 | `garuchan-cli baby list` → `baby chat ID "..."` |
+| （スタッフ）「届いた提出物を確認して」 | `submission list` → `submission review ID --approve/--reject` |
+| （スタッフ）「承認したゲーム/小説を公開して」 | `land game publish` / `novel publish`（garoop-data へPR） |
+
+## Garoopサービス操作の注意
+- ログインが必要な操作の前に `garoop-cli me` でセッションを確認する。未ログインならユーザーに `sessionId` Cookie の用意を頼む（パスワードを聞かない）
+- 提出系はまず dry-run の出力（送る内容・ファイル）をユーザーに見せてから `--execute`
+- 保護者の合言葉はコマンド引数に書かない。`kids family unlock` を実行し、ユーザー本人に標準入力で入れてもらうか `GAROOP_PARENT_PASSCODE` を使う。エージェントが合言葉を保存・表示しない
+- `kids family review --approve` はガル（おこづかい相当）が動く。ユーザーの明示的な指示がある場合だけ実行する
+- スタッフ用コマンド（`submission list/review`、`* publish`、`tv schedule-add`）は `GAROOP_ADMIN_SECRET` を持つスタッフの依頼でのみ使う
+- garoop-data は**公開リポジトリ**。PR の内容も公開される。子どもの実名・学校名・住所・顔写真など個人情報を入れない
+- 動画・音声生成はローカルの garuchan_creator / VOICEVOX が起動していることが前提
