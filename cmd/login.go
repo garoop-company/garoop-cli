@@ -111,3 +111,36 @@ func reportLogin() error {
 	fmt.Printf("ログインしました: %v（保存先 %s）\n", u["name"], garoopapi.SessionPath())
 	return nil
 }
+
+var logoutCmd = &cobra.Command{
+	Use:     "logout",
+	Short:   "Garoopからログアウトし、保存したセッションを消す",
+	GroupID: groupServices,
+	Annotations: map[string]string{
+		annotationProfiles: strings.Join([]string{ProfileGaroop, ProfileGaruchan, ProfileGaroopTV}, ","),
+	},
+	RunE: func(cmd *cobra.Command, args []string) error {
+		// --code で入った場合はブラウザと同じセッションなので、サーバー側を消すと
+		// ブラウザまでログアウトしてしまう。そのときは手元の保存だけ消す。
+		shared := garoopapi.SessionVia() == "transfer"
+		if !shared && garoopapi.NewClient().Cookie != "" {
+			// サーバー側のセッションも消す。失敗しても手元のセッションは消す
+			_, _ = garoopapi.NewClient().Query(`mutation Logout { logout { success } }`, nil)
+		}
+		if err := garoopapi.ClearSession(); err != nil {
+			return err
+		}
+		if shared {
+			fmt.Println("CLIからログアウトしました（ブラウザのログインはそのままです）")
+			return nil
+		}
+		fmt.Println("ログアウトしました")
+		return nil
+	},
+}
+
+func init() {
+	loginCmd.Flags().StringVar(&loginEmail, "email", "", "登録したメールアドレス（省略時は入力を求める）")
+	loginCmd.Flags().BoolVar(&loginCode, "code", false, "Google / LINE などで登録した人: ブラウザで出したコードでログイン")
+	rootCmd.AddCommand(loginCmd, logoutCmd)
+}
