@@ -33,26 +33,15 @@ var rootCmd = &cobra.Command{
 	},
 }
 
-func init() {
-	rootCmd.AddGroup(
-		&cobra.Group{
-			ID:    "garoop_cli",
-			Title: "garoop-cli",
-		},
-		&cobra.Group{
-			ID:    "garuchan_cli",
-			Title: "garuchan-cli",
-		},
-		&cobra.Group{
-			ID:    "garooptv_cli",
-			Title: "garooptv-cli",
-		},
-		&cobra.Group{
-			ID:    groupServices,
-			Title: "Garoopサービス操作",
-		},
-	)
+// commandGroups は help の見出し。表示するコマンドがあるものだけ applyProfile で登録する。
+var commandGroups = []*cobra.Group{
+	{ID: "garoop_cli", Title: "garoop-cli"},
+	{ID: "garuchan_cli", Title: "garuchan-cli"},
+	{ID: "garooptv_cli", Title: "garooptv-cli"},
+	{ID: groupServices, Title: "Garoopサービス操作"},
+}
 
+func init() {
 	rootCmd.PersistentFlags().BoolVar(&executeMode, "execute", false, "実際のAPIを実行する（未指定時はdry-run）")
 	rootCmd.PersistentFlags().StringSliceVar(&hashtags, "hashtags", []string{"ガルちゃん", "子供起業", "Garoop"}, "投稿に付与するハッシュタグ")
 	rootCmd.PersistentFlags().StringVar(&garuchanImage, "garuchan-image", "assets/garuchan.webp", "ガルちゃん画像のローカルパス")
@@ -97,6 +86,25 @@ func applyProfile(profile string) {
 			continue
 		}
 		c.Hidden = !allowedGroupIDs[c.GroupID]
+	}
+
+	// 他バイナリ向けのコマンドしかないグループは見出しだけ残るので登録しない。
+	// 未登録のグループを参照すると cobra が失敗するため、隠したコマンドのグループは外す。
+	visibleGroups := map[string]bool{}
+	for _, c := range rootCmd.Commands() {
+		if c.GroupID == "" {
+			continue
+		}
+		if c.Hidden {
+			c.GroupID = ""
+			continue
+		}
+		visibleGroups[c.GroupID] = true
+	}
+	for _, g := range commandGroups {
+		if visibleGroups[g.ID] {
+			rootCmd.AddGroup(g)
+		}
 	}
 }
 
