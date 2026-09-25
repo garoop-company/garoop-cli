@@ -29,6 +29,7 @@
 ## Garoopサービス操作の対応表
 | ユーザーの依頼例 | コマンド |
 |---|---|
+| 「ログインして」 | `garoop-cli me` → 未ログインなら `garoop-cli login --email ...`（本人がパスワードを入力） |
 | 「今GaroopTVで何やってる？」「明日の番組表」 | `garooptv-cli tv schedule --now` / `tv schedule --date YYYY-MM-DD` |
 | 「GaroopTVでこんな番組をやってほしい」 | `garooptv-cli tv propose --title ... --description ...` |
 | 「子どもにお手伝いのミッションを出したい」 | `garoop-cli kids family unlock` → `kids family create --title ... --reward-garu ...` |
@@ -45,10 +46,12 @@
 | （スタッフ）「承認したゲーム/小説を公開して」 | `land game publish` / `novel publish`（garoop-data へPR） |
 
 ## Garoopサービス操作の注意
-- ログインが必要な操作の前に `garoop-cli me` でセッションを確認する。未ログイン・期限切れなら、ユーザー本人に自分の端末で `garoop-cli session-set-cookie` を実行してもらう（README「はじめての準備」を案内。Claude Code なら `! garoop-cli session-set-cookie`）。パスワードや Cookie をチャットで受け取らない・引数に書かない
+- ログインが必要な操作の前に `garoop-cli me` でセッションを確認する。未ログイン・期限切れ（約24時間で切れる）なら、メール登録のユーザーには `garoop-cli login --email <メール>` を実行する。パスワードは端末の伏せ字入力か macOS のダイアログでユーザー本人が入れる
+- Google / LINE で登録したユーザーは `garoop-cli session-set-cookie`（README「はじめての準備」を案内）
+- パスワード・Cookie・合言葉をチャットで聞かない・受け取らない。コマンド引数や標準入力に渡さない。ユーザーがチャットに貼ってしまったら使わずに、ダイアログで入れ直してもらう
 - 閲覧系（`tv schedule`、`kids mission list`、`novel list` など）はログイン不要。まずこれで疎通を確かめてよい
 - 提出系はまず dry-run の出力（送る内容・ファイル）をユーザーに見せてから `--execute`
-- 保護者の合言葉はコマンド引数に書かない。`kids family unlock` はユーザー本人に自分の端末で実行してもらう（35分有効）。エージェントが合言葉を聞き出す・標準入力に流し込む・保存・表示することはしない
+- 保護者の合言葉はコマンド引数に書かない。`kids family unlock` を実行すると保護者本人が入力する（35分有効）。エージェントが合言葉を聞き出す・標準入力に流し込む・保存・表示することはしない
 - `kids family review --approve` はガル（おこづかい相当）が動く。ユーザーの明示的な指示がある場合だけ実行する
 - スタッフ用コマンド（`submission list/review`、`* publish`、`tv schedule-add`）は `GAROOP_ADMIN_SECRET` を持つスタッフの依頼でのみ使う
 - garoop-data は**公開リポジトリ**。PR の内容も公開される。子どもの実名・学校名・住所・顔写真など個人情報を入れない

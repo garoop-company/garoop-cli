@@ -3,6 +3,7 @@ package garoopapi
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -78,18 +79,52 @@ func SaveCookie(cookie string) error {
 }
 
 func (c *Client) Query(query string, variables map[string]any) (*Response, error) {
+	out, _, err := c.do(query, variables)
+	return out, err
+}
+
+// ErrNoSession はログイン要求にサーバーがセッションを返さなかったこと（認証情報の誤りなど）を表す。
+var ErrNoSession = errors.New("no session returned")
+
+// Login はログイン系の mutation を送り、サーバーが返した sessionId Cookie を保存する。
+// Origin ヘッダーを付けないので、api.garoop.jp はブラウザ外のクライアントとして受け付ける。
+func (c *Client) Login(query string, variables map[string]any) (*Response, error) {
+	out, cookies, err := c.do(query, variables)
+	if err != nil {
+		return nil, err
+	}
+	if len(out.Errors) > 0 {
+		return out, fmt.Errorf("%s", out.Errors[0].Message)
+	}
+	for _, ck := range cookies {
+		if ck.Name == "sessionId" && ck.Value != "" {
+			return out, SaveCookie("sessionId=" + ck.Value)
+		}
+	}
+	return out, ErrNoSession
+}
+
+// ClearSession は保存済みのログインCookieを消す。
+func ClearSession() error {
+	if err := os.Remove(sessionPath); err != nil && !os.IsNotExist(err) {
+		return err
+	}
+	return nil
+}
+
+func (c *Client) do(query string, variables map[string]any) (*Response, []*http.Cookie, error) {
 	payload := map[string]any{
 		"query":     query,
 		"variables": variables,
 	}
 	b, err := json.Marshal(payload)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	req, err := http.NewRequest(http.MethodPost, c.Endpoint, bytes.NewReader(b))
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	req.Header.Set("Content-Type", "application/json")
 	if strings.TrimSpace(c.Cookie) != "" {
@@ -101,19 +136,19 @@ func (c *Client) Query(query string, variables map[string]any) (*Response, error
 
 	resp, err := c.client.Do(req)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	defer resp.Body.Close()
 	body, _ := io.ReadAll(resp.Body)
 	if resp.StatusCode >= 300 {
-		return nil, fmt.Errorf("graphql request failed: status=%d body=%s", resp.StatusCode, strings.TrimSpace(string(body)))
+		return nil, nil, fmt.Errorf("graphql request failed: status=%d body=%s", resp.StatusCode, strings.TrimSpace(string(body)))
 	}
 
 	var out Response
 	if err := json.Unmarshal(body, &out); err != nil {
-		return nil, err
+		return nil, nil, err
 	}
-	return &out, nil
+	return &out, resp.Cookies(), nil
 }
 
 func AuthURLQuery(provider string) (string, string, error) {

@@ -301,22 +301,21 @@ Garoop の各サービスを AI エージェントから操作するコマンド
 番組表・ミッション一覧・小説一覧などの閲覧は、インストールだけで使えます。ログインが要るのは提出・おうちミッション・赤ちゃんとの会話などです。
 
 1. CLI を入れる（上の Homebrew か install.sh。エージェントに頼んでもよい）
-2. ブラウザで garoop.jp にログインし、開発者ツール → Application（Safari はストレージ）→ Cookie → `sessionId` の値をコピー
-3. **自分の端末で** 次を実行して貼り付ける
-   ```bash
-   garoop-cli session-set-cookie   # 値を貼り付けて Enter
-   garoop-cli me                   # ログイン確認
-   ```
-4. おうちミッションを使う保護者は、使うたびに **自分の端末で** `garoop-cli kids family unlock` を実行して合言葉を入れる（35分有効）
+2. ログインする
+   - **メールアドレスで登録した人**（ブラウザ不要）: `garoop-cli login --email you@example.com`
+     パスワードは端末なら伏せ字で入力します。Claude Code などのエージェントに「ログインして」と頼んだ場合は、macOS の入力ダイアログが出るので、そこに本人が入れます。パスワードはエージェントに見えず、保存もされません
+   - **Google / LINE などで登録した人**: ブラウザで garoop.jp にログインし、開発者ツール → Application（Safari はストレージ）→ Cookie → `sessionId` の値をコピーして、`garoop-cli session-set-cookie` を実行して貼り付けます（エージェントから実行した場合もダイアログが出ます）
+3. `garoop-cli me` でログインを確認
+4. おうちミッションを使う保護者は、使うたびに `garoop-cli kids family unlock`（合言葉も本人がダイアログか端末で入力。35分有効）
 
-Cookie と合言葉はパスワードと同じ扱いです。AI エージェントのチャットに貼ったり、コマンド引数に書いたりしないでください。
-エージェントの中から本人が入力するには、Claude Code ならプロンプトで `! garoop-cli session-set-cookie`、Codex なら別のターミナルで実行します。
-ログイン情報は `~/.config/garoop-cli/tokens/` に保存されるので、どのディレクトリからエージェントを動かしても同じログインを使えます（`GAROOP_CLI_TOKEN_DIR` で変更可。以前の `./tokens/` があればそちらを優先）。
-ログインが切れたら `me` がそう伝えるので、2〜3 をやり直します。
+パスワード・Cookie・合言葉は、AI エージェントのチャットに貼ったりコマンド引数に書いたりしないでください。
+ログインは約24時間で切れます。切れたら `me` がそう伝えるので、もう一度 `login` します。
+ログイン情報は `~/.config/garoop-cli/tokens/` に保存されるので、どのディレクトリからエージェントを動かしても同じログインを使えます（`GAROOP_CLI_TOKEN_DIR` で変更可。以前の `./tokens/` があればそちらを優先）。`garoop-cli logout` で消せます。
+入力ダイアログは macOS のみです。Linux / Android でエージェントから使う場合は、ログインだけ自分の端末で実行してください。
 
 ### 書き込みの仕組み
 - すべての書き込み系は既定で dry-run。`--execute` を付けたときだけ実行します
-- **ログイン**: ブラウザでログイン後の `sessionId` Cookie を保存して使います（後述「はじめての準備」）
+- **ログイン**: `login`（メール登録）か `session-set-cookie`（Google / LINE 登録）でセッションを保存して使います（「はじめての準備」参照）
 - **提出物（課題・ミッション成果物・ゲーム・小説・番組提案）**: api.garoop.jp の提出受付に送られ、スタッフが確認します。ファイルは自分専用の領域（`uploads/users/<userId>/`）にアップロードされます
 - **おうちミッション**: Garoop Pay で子どもを登録済みであることが前提です。登録・承認・削除には保護者の合言葉が必要です（`kids family unlock`。35分有効。`GAROOP_PARENT_PASSCODE` か標準入力で渡し、引数では渡しません）
 - **スタッフ用**: `GAROOP_ADMIN_SECRET`（kids_api の `GRAPHQL_ADMIN_SECRET`）が必要です。公開（garoop-data へのPR）には `gh auth login` か `GITHUB_TOKEN` も必要です。garoop-data は公開リポジトリなので、子どもの個人情報を含めないでください

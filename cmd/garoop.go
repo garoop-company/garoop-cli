@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"bufio"
 	"encoding/json"
 	"fmt"
 	"os"
@@ -78,12 +77,13 @@ var garoopSessionSetCookieCmd = &cobra.Command{
 	},
 	Long: `ブラウザで Garoop にログインしたあとの sessionId Cookie を保存します。
 Cookie はパスワードと同じ扱いです。コマンド引数に書くと履歴に残るので、
-引数なしで実行して標準入力に貼り付けるか、--cookie-file を使ってください。
-AIエージェントを使っている場合は、エージェントに貼らずにユーザー本人が自分の端末で実行してください。
+引数なしで実行すると、端末では伏せ字で、AIエージェントから実行された場合は macOS の
+入力ダイアログで本人が貼り付けます。エージェントのチャットには貼らないでください。
+メールアドレスで登録したアカウントなら login のほうが簡単です。
 
 取り出し方: ブラウザで garoop.jp にログイン → 開発者ツール → Application（Safariはストレージ）
 → Cookie → sessionId の値をコピー`,
-	Example: `  garoop-cli session-set-cookie            # sessionId の値を貼り付けて Enter
+	Example: `  garoop-cli session-set-cookie            # sessionId の値を貼り付ける
   garoop-cli session-set-cookie --cookie-file ./cookie.txt
   garoop-cli me                            # ログイン確認`,
 	RunE: func(cmd *cobra.Command, args []string) error {
@@ -96,12 +96,11 @@ AIエージェントを使っている場合は、エージェントに貼らず
 			cookie = strings.TrimSpace(string(b))
 		}
 		if cookie == "" {
-			fmt.Fprint(os.Stderr, "sessionId の値を貼り付けて Enter: ")
-			line, err := bufio.NewReader(os.Stdin).ReadString('\n')
-			if err != nil && line == "" {
-				return fmt.Errorf("Cookieを読み取れませんでした。ユーザー本人が端末で実行するか --cookie-file を使ってください")
+			v, err := readSecret("sessionId Cookie の値")
+			if err != nil {
+				return err
 			}
-			cookie = strings.TrimSpace(line)
+			cookie = v
 		}
 		if cookie == "" {
 			return fmt.Errorf("Cookieが空です")

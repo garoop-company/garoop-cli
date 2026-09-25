@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"bufio"
 	"fmt"
 	"os"
 	"strings"
@@ -58,19 +57,19 @@ var kidsFamilyChildrenCmd = &cobra.Command{
 
 var kidsFamilyUnlockCmd = &cobra.Command{
 	Use:   "unlock",
-	Short: "保護者の合言葉を通す（GAROOP_PARENT_PASSCODE か標準入力から読む）",
+	Short: "保護者の合言葉を通す（保護者本人が入力。35分有効）",
 	Long: `保護者の合言葉を通します。このセッションで35分間、保護者の操作（登録・承認・削除）ができます。
 合言葉はコマンドライン引数では受け取りません（履歴に残るため）。
-環境変数 GAROOP_PARENT_PASSCODE か、標準入力から渡してください。`,
+環境変数 GAROOP_PARENT_PASSCODE がなければ、端末では伏せ字で、AIエージェントから実行された場合は
+macOS の入力ダイアログで保護者本人が入力します。`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		passcode := strings.TrimSpace(os.Getenv("GAROOP_PARENT_PASSCODE"))
 		if passcode == "" {
-			fmt.Fprint(os.Stderr, "保護者の合言葉: ")
-			line, err := bufio.NewReader(os.Stdin).ReadString('\n')
-			if err != nil && line == "" {
-				return fmt.Errorf("合言葉を読み取れませんでした")
+			v, err := readSecret("保護者の合言葉")
+			if err != nil {
+				return err
 			}
-			passcode = strings.TrimSpace(line)
+			passcode = v
 		}
 		if passcode == "" {
 			return fmt.Errorf("合言葉が空です")
