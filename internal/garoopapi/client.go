@@ -71,11 +71,25 @@ func NewAdminClient() (*Client, error) {
 func SessionPath() string { return sessionPath }
 
 func SaveCookie(cookie string) error {
+	return saveSession(cookie, "cookie")
+}
+
+func saveSession(cookie, via string) error {
 	payload := map[string]string{
 		"cookie":   strings.TrimSpace(cookie),
+		"via":      via,
 		"saved_at": time.Now().Format(time.RFC3339),
 	}
 	return authutil.SaveJSON(sessionPath, payload)
+}
+
+// SessionVia は保存済みセッションの出どころを返す（不明なら空）。
+func SessionVia() string {
+	var saved struct {
+		Via string `json:"via"`
+	}
+	_ = authutil.LoadJSON(sessionPath, &saved)
+	return saved.Via
 }
 
 func (c *Client) Query(query string, variables map[string]any) (*Response, error) {
@@ -88,7 +102,8 @@ var ErrNoSession = errors.New("no session returned")
 
 // Login はログイン系の mutation を送り、サーバーが返した sessionId Cookie を保存する。
 // Origin ヘッダーを付けないので、api.garoop.jp はブラウザ外のクライアントとして受け付ける。
-func (c *Client) Login(query string, variables map[string]any) (*Response, error) {
+// via は保存するセッションの出どころ（"mail" / "transfer" など）。logout の動きを変えるのに使う。
+func (c *Client) Login(query string, variables map[string]any, via string) (*Response, error) {
 	out, cookies, err := c.do(query, variables)
 	if err != nil {
 		return nil, err
@@ -98,7 +113,7 @@ func (c *Client) Login(query string, variables map[string]any) (*Response, error
 	}
 	for _, ck := range cookies {
 		if ck.Name == "sessionId" && ck.Value != "" {
-			return out, SaveCookie("sessionId=" + ck.Value)
+			return out, saveSession("sessionId="+ck.Value, via)
 		}
 	}
 	return out, ErrNoSession

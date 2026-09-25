@@ -304,7 +304,9 @@ Garoop の各サービスを AI エージェントから操作するコマンド
 2. ログインする
    - **メールアドレスで登録した人**（ブラウザ不要）: `garoop-cli login --email you@example.com`
      パスワードは端末なら伏せ字で入力します。Claude Code などのエージェントに「ログインして」と頼んだ場合は、macOS の入力ダイアログが出るので、そこに本人が入れます。パスワードはエージェントに見えず、保存もされません
-   - **Google / LINE などで登録した人**: ブラウザで garoop.jp にログインし、開発者ツール → Application（Safari はストレージ）→ Cookie → `sessionId` の値をコピーして、`garoop-cli session-set-cookie` を実行して貼り付けます（エージェントから実行した場合もダイアログが出ます）
+   - **Google / LINE などで登録した人**: `garoop-cli login --code`
+     ブラウザで create.garoop.jp の「CLIにログイン」ページが開くので、「コードを出す」を押し、出てきたコードを入力欄（端末、またはエージェントから実行した場合は macOS のダイアログ）に貼り付けます。コードは5分間・1回限りです。ブラウザと同じログインを使うので、`logout` してもブラウザのログインはそのままです
+   - どちらも使えない場合は、ブラウザの開発者ツールで `sessionId` Cookie をコピーして `garoop-cli session-set-cookie` でも入れられます
 3. `garoop-cli me` でログインを確認
 4. おうちミッションを使う保護者は、使うたびに `garoop-cli kids family unlock`（合言葉も本人がダイアログか端末で入力。35分有効）
 

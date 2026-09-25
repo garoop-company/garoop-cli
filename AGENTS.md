@@ -29,7 +29,7 @@
 ## Garoopサービス操作の対応表
 | ユーザーの依頼例 | コマンド |
 |---|---|
-| 「ログインして」 | `garoop-cli me` → 未ログインなら `garoop-cli login --email ...`（本人がパスワードを入力） |
+| 「ログインして」 | `garoop-cli me` → 未ログインなら `garoop-cli login --email ...`（本人がパスワードを入力）/ Google・LINE 登録なら `garoop-cli login --code` |
 | 「今GaroopTVで何やってる？」「明日の番組表」 | `garooptv-cli tv schedule --now` / `tv schedule --date YYYY-MM-DD` |
 | 「GaroopTVでこんな番組をやってほしい」 | `garooptv-cli tv propose --title ... --description ...` |
 | 「子どもにお手伝いのミッションを出したい」 | `garoop-cli kids family unlock` → `kids family create --title ... --reward-garu ...` |
@@ -47,7 +47,7 @@
 
 ## Garoopサービス操作の注意
 - ログインが必要な操作の前に `garoop-cli me` でセッションを確認する。未ログイン・期限切れ（約24時間で切れる）なら、メール登録のユーザーには `garoop-cli login --email <メール>` を実行する。パスワードは端末の伏せ字入力か macOS のダイアログでユーザー本人が入れる
-- Google / LINE で登録したユーザーは `garoop-cli session-set-cookie`（README「はじめての準備」を案内）
+- Google / LINE で登録したユーザーは `garoop-cli login --code`。ブラウザで「CLIにログイン」ページが開くので、本人が「コードを出す」を押してダイアログに貼る
 - パスワード・Cookie・合言葉をチャットで聞かない・受け取らない。コマンド引数や標準入力に渡さない。ユーザーがチャットに貼ってしまったら使わずに、ダイアログで入れ直してもらう
 - 閲覧系（`tv schedule`、`kids mission list`、`novel list` など）はログイン不要。まずこれで疎通を確かめてよい
 - 提出系はまず dry-run の出力（送る内容・ファイル）をユーザーに見せてから `--execute`

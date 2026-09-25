@@ -41,7 +41,7 @@ mutates=true のコマンドは既定で dry-run になり、--execute を付け
 				"出力はJSON（一部のSNS系コマンドはテキスト）",
 				"mutates=true のコマンドは既定でdry-run。実行は --execute を付けたときだけ",
 				"Garoopサービス（api.garoop.jp）のログインが必要なコマンドは、先に `me` で確認する。未ログイン・期限切れ（約24時間）なら `login --email <ユーザーのメール>` を実行する。パスワードは端末の伏せ字入力か macOS のダイアログでユーザー本人が入れるので、エージェントはパスワードを聞かない・引数や標準入力に渡さない",
-				"Google / LINE で登録したユーザーは `session-set-cookie`（ブラウザの sessionId Cookie を本人がダイアログに貼る）。Cookie もチャットで受け取らない",
+				"Google / LINE で登録したユーザーは `login --code`。ブラウザで create.garoop.jp の「CLIにログイン」ページが開くので、本人がコードを出してダイアログに貼る。コードもチャットで受け取らない",
 				"保護者の合言葉（kids family unlock）も同じく、コマンドを実行すると本人が入力する。エージェントは聞き出さない・保存しない・表示しない",
 				"garoop-data（data.garoop.jp）へのコンテンツ公開はPR作成。`gh auth login` または GITHUB_TOKEN が必要",
 				"--description / --detail / --prompt などは @path でファイルから読み込める",

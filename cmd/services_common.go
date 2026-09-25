@@ -69,9 +69,9 @@ func loginUser() (map[string]any, error) {
 	u, _ := resp.Data["getLoginUser"].(map[string]any)
 	if u == nil {
 		if garoopapi.NewClient().Cookie == "" {
-			return nil, fmt.Errorf("ログインしていません。`garoop-cli login --email <メール>` でログインしてください（Google / LINE 登録の場合は `garoop-cli session-set-cookie`）")
+			return nil, fmt.Errorf("ログインしていません。`garoop-cli login --email <メール>` でログインしてください（Google / LINE 登録の場合は `garoop-cli login --code`）")
 		}
-		return nil, fmt.Errorf("ログインが切れています（約24時間で切れます）。`garoop-cli login --email <メール>` でログインし直してください（Google / LINE 登録の場合は `garoop-cli session-set-cookie`）")
+		return nil, fmt.Errorf("ログインが切れています（約24時間で切れます）。`garoop-cli login --email <メール>` でログインし直してください（Google / LINE 登録の場合は `garoop-cli login --code`）")
 	}
 	return u, nil
 }
