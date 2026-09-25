@@ -1,13 +1,14 @@
 package cmd
 
 import (
+	"bufio"
 	"encoding/json"
 	"fmt"
 	"os"
 	"strings"
 
-	"github.com/yamashitadaiki/garoop-cli/internal/garoopapi"
 	"github.com/spf13/cobra"
+	"github.com/yamashitadaiki/garoop-cli/internal/garoopapi"
 )
 
 var (
@@ -70,8 +71,21 @@ var garoopAuthURLCmd = &cobra.Command{
 
 var garoopSessionSetCookieCmd = &cobra.Command{
 	Use:     "session-set-cookie",
-	Short:   "GaroopのセッションCookieを保存 (tokens/garoop_session.json)",
-	GroupID: "garooptv_cli",
+	Short:   "GaroopのログインCookie（sessionId）を保存",
+	GroupID: groupServices,
+	Annotations: map[string]string{
+		annotationProfiles: strings.Join([]string{ProfileGaroop, ProfileGaruchan, ProfileGaroopTV}, ","),
+	},
+	Long: `ブラウザで Garoop にログインしたあとの sessionId Cookie を保存します。
+Cookie はパスワードと同じ扱いです。コマンド引数に書くと履歴に残るので、
+引数なしで実行して標準入力に貼り付けるか、--cookie-file を使ってください。
+AIエージェントを使っている場合は、エージェントに貼らずにユーザー本人が自分の端末で実行してください。
+
+取り出し方: ブラウザで garoop.jp にログイン → 開発者ツール → Application（Safariはストレージ）
+→ Cookie → sessionId の値をコピー`,
+	Example: `  garoop-cli session-set-cookie            # sessionId の値を貼り付けて Enter
+  garoop-cli session-set-cookie --cookie-file ./cookie.txt
+  garoop-cli me                            # ログイン確認`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		cookie := strings.TrimSpace(garoopCookie)
 		if cookie == "" && strings.TrimSpace(garoopCookieFile) != "" {
@@ -82,12 +96,24 @@ var garoopSessionSetCookieCmd = &cobra.Command{
 			cookie = strings.TrimSpace(string(b))
 		}
 		if cookie == "" {
-			return fmt.Errorf("--cookie または --cookie-file が必要です")
+			fmt.Fprint(os.Stderr, "sessionId の値を貼り付けて Enter: ")
+			line, err := bufio.NewReader(os.Stdin).ReadString('\n')
+			if err != nil && line == "" {
+				return fmt.Errorf("Cookieを読み取れませんでした。ユーザー本人が端末で実行するか --cookie-file を使ってください")
+			}
+			cookie = strings.TrimSpace(line)
+		}
+		if cookie == "" {
+			return fmt.Errorf("Cookieが空です")
+		}
+		// 値だけ貼られたときは Cookie ヘッダーの形にする
+		if !strings.Contains(cookie, "=") {
+			cookie = "sessionId=" + cookie
 		}
 		if err := garoopapi.SaveCookie(cookie); err != nil {
 			return err
 		}
-		fmt.Println("保存しました: tokens/garoop_session.json")
+		fmt.Printf("保存しました: %s\n`me` でログインを確認できます\n", garoopapi.SessionPath())
 		return nil
 	},
 }

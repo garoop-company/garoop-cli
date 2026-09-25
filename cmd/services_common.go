@@ -68,7 +68,10 @@ func loginUser() (map[string]any, error) {
 	}
 	u, _ := resp.Data["getLoginUser"].(map[string]any)
 	if u == nil {
-		return nil, fmt.Errorf("ログインしていません。`garooptv-cli session-set-cookie --cookie \"sessionId=...\"` でセッションを保存してください")
+		if garoopapi.NewClient().Cookie == "" {
+			return nil, fmt.Errorf("ログインしていません。ユーザー本人が端末で `garoop-cli session-set-cookie` を実行し、ブラウザの sessionId Cookie を貼り付けてください")
+		}
+		return nil, fmt.Errorf("保存済みのログインが切れています。ブラウザで garoop.jp にログインし直し、ユーザー本人が端末で `garoop-cli session-set-cookie` を実行してください")
 	}
 	return u, nil
 }

@@ -60,7 +60,7 @@ func NewInstagramClient(execute bool) (*InstagramClient, error) {
 			AccessToken string `json:"access_token"`
 			IGUserID    string `json:"ig_user_id"`
 		}
-		if err := authutil.LoadJSON("tokens/instagram.json", &saved); err == nil {
+		if err := authutil.LoadJSON(authutil.TokenPath("instagram.json"), &saved); err == nil {
 			if token == "" {
 				token = strings.TrimSpace(saved.AccessToken)
 			}
@@ -70,7 +70,7 @@ func NewInstagramClient(execute bool) (*InstagramClient, error) {
 		}
 	}
 	if token == "" || userID == "" {
-		return nil, fmt.Errorf("Instagramの実行には環境変数か tokens/instagram.json の認証情報が必要です")
+		return nil, fmt.Errorf("Instagramの実行には環境変数か %s の認証情報が必要です", authutil.TokenPath("instagram.json"))
 	}
 
 	return &InstagramClient{

@@ -26,11 +26,11 @@ import (
 	"github.com/spf13/cobra"
 )
 
-const (
-	xTokenPath         = "tokens/x.json"
-	youtubeTokenPath   = "tokens/youtube.json"
-	instagramTokenPath = "tokens/instagram.json"
-	noteCookiePath     = "tokens/note_cookie.json"
+var (
+	xTokenPath         = authutil.TokenPath("x.json")
+	youtubeTokenPath   = authutil.TokenPath("youtube.json")
+	instagramTokenPath = authutil.TokenPath("instagram.json")
+	noteCookiePath     = authutil.TokenPath("note_cookie.json")
 )
 
 type noteCookieEntry struct {
@@ -415,7 +415,7 @@ var authNoteCmd = &cobra.Command{
 
 var authNoteSetCookieCmd = &cobra.Command{
 	Use:   "set-cookie",
-	Short: "note.comのcookie JSONを tokens/note_cookie.json に保存",
+	Short: "note.comのcookie JSONを保存",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if strings.TrimSpace(noteCookieInput) == "" {
 			return fmt.Errorf("--cookie-json を指定してください")
@@ -424,7 +424,7 @@ var authNoteSetCookieCmd = &cobra.Command{
 		if err != nil {
 			return err
 		}
-		if err := os.MkdirAll(filepath.Dir(noteCookiePath), 0o755); err != nil {
+		if err := os.MkdirAll(filepath.Dir(noteCookiePath), 0o700); err != nil {
 			return err
 		}
 		if err := os.WriteFile(noteCookiePath, b, 0o600); err != nil {

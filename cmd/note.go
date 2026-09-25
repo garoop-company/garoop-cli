@@ -45,7 +45,7 @@ var notePostCmd = &cobra.Command{
 }
 
 func init() {
-	notePostCmd.Flags().StringVar(&noteCookieJSON, "cookie-json", "tokens/note_cookie.json", "note.comのcookie JSONファイル")
+	notePostCmd.Flags().StringVar(&noteCookieJSON, "cookie-json", noteCookiePath, "note.comのcookie JSONファイル")
 	notePostCmd.Flags().StringVar(&noteImage, "image", "", "アイキャッチ画像パスまたはURL")
 	notePostCmd.Flags().BoolVar(&notePublish, "publish", false, "公開状態で投稿する（未指定時は下書き）")
 

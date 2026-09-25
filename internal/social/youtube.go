@@ -74,12 +74,12 @@ func NewYouTubeClient(execute bool) (*YouTubeClient, error) {
 		var saved struct {
 			AccessToken string `json:"access_token"`
 		}
-		if err := authutil.LoadJSON("tokens/youtube.json", &saved); err == nil {
+		if err := authutil.LoadJSON(authutil.TokenPath("youtube.json"), &saved); err == nil {
 			token = strings.TrimSpace(saved.AccessToken)
 		}
 	}
 	if token == "" {
-		return nil, fmt.Errorf("YouTubeの実行には環境変数か tokens/youtube.json の access_token が必要です")
+		return nil, fmt.Errorf("YouTubeの実行には環境変数か %s の access_token が必要です", authutil.TokenPath("youtube.json"))
 	}
 	return &YouTubeClient{
 		accessToken: token,

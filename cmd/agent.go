@@ -40,7 +40,8 @@ mutates=true のコマンドは既定で dry-run になり、--execute を付け
 			"conventions": []string{
 				"出力はJSON（一部のSNS系コマンドはテキスト）",
 				"mutates=true のコマンドは既定でdry-run。実行は --execute を付けたときだけ",
-				"Garoopサービス（api.garoop.jp）のログインが必要なコマンドは `garooptv-cli session-set-cookie --cookie \"sessionId=...\"` でセッションを保存してから使う",
+				"Garoopサービス（api.garoop.jp）のログインが必要なコマンドは、先に `me` で確認する。未ログインならユーザー本人に端末で `session-set-cookie` を実行してもらう（Cookie をエージェントに貼らせない・引数に書かない）",
+				"保護者の合言葉（kids family unlock）も同様に、ユーザー本人が端末で入力する。エージェントは標準入力に代入しない",
 				"garoop-data（data.garoop.jp）へのコンテンツ公開はPR作成。`gh auth login` または GITHUB_TOKEN が必要",
 				"--description / --detail / --prompt などは @path でファイルから読み込める",
 			},

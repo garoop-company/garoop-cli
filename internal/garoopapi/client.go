@@ -14,7 +14,8 @@ import (
 )
 
 const defaultEndpoint = "https://api.garoop.jp/query"
-const sessionPath = "tokens/garoop_session.json"
+
+var sessionPath = authutil.TokenPath("garoop_session.json")
 
 type Client struct {
 	Endpoint string
@@ -64,6 +65,9 @@ func NewAdminClient() (*Client, error) {
 	c.AdminToken = token
 	return c, nil
 }
+
+// SessionPath はログインCookieの保存先。
+func SessionPath() string { return sessionPath }
 
 func SaveCookie(cookie string) error {
 	payload := map[string]string{

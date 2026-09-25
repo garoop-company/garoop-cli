@@ -142,7 +142,7 @@ var garuchanFeedNoteCmd = &cobra.Command{
 		if user == "" {
 			return fmt.Errorf("--username または NOTE_USERNAME が必要です")
 		}
-		client, err := social.NewNoteClient(executeMode, "tokens/note_cookie.json")
+		client, err := social.NewNoteClient(executeMode, noteCookiePath)
 		if err != nil {
 			return err
 		}

@@ -77,13 +77,6 @@ brew install garooptv-cli
 
 Homebrew 配布は GoReleaser 経由で行います。タグ付きリリース後に `garoop-company/homebrew-tap` の Formula が更新される前提です。
 
-### 1.0 `go install` で入れる
-```bash
-go install github.com/garoop-company/garoop-cli/cmd/garoop-cli@latest
-go install github.com/garoop-company/garoop-cli/cmd/garuchan-cli@latest
-go install github.com/garoop-company/garoop-cli/cmd/garooptv-cli@latest
-```
-
 ### 1.1 CLI本体のインストール（install.sh / macOS・Linux・Android）
 ```bash
 curl -fsSL https://raw.githubusercontent.com/garoop-company/garoop-cli/main/scripts/install.sh | bash
@@ -244,7 +237,7 @@ garoop-cli instagram like MEDIA_ID
 garoop-cli youtube upload ./movie.mp4 "動画タイトル" --description "動画説明"
 garoop-cli youtube comment VIDEO_ID "コメントします"
 garoop-cli youtube auto-reply --channel-id UCVXDkfy7aD08L7y7JK1AtmA --max-replies 5
-garoop-cli note post "記事タイトル" ./article.html --cookie-json ./tokens/note_cookie.json
+garoop-cli note post "記事タイトル" ./article.html
 garoop-cli stocks order AAPL 1 --side buy
 garoop-cli gemini login
 garoop-cli gemini prompt "ガルちゃん育成の投稿文を3案作って"
@@ -304,13 +297,26 @@ Garoop の各サービスを AI エージェントから操作するコマンド
 
 表示されるバイナリ: `tv` は `garoop-cli` と `garooptv-cli`、`baby` / `studio` は `garoop-cli` と `garuchan-cli`、それ以外は `garoop-cli`。
 
+### はじめての準備（ユーザー本人がやること）
+番組表・ミッション一覧・小説一覧などの閲覧は、インストールだけで使えます。ログインが要るのは提出・おうちミッション・赤ちゃんとの会話などです。
+
+1. CLI を入れる（上の Homebrew か install.sh。エージェントに頼んでもよい）
+2. ブラウザで garoop.jp にログインし、開発者ツール → Application（Safari はストレージ）→ Cookie → `sessionId` の値をコピー
+3. **自分の端末で** 次を実行して貼り付ける
+   ```bash
+   garoop-cli session-set-cookie   # 値を貼り付けて Enter
+   garoop-cli me                   # ログイン確認
+   ```
+4. おうちミッションを使う保護者は、使うたびに **自分の端末で** `garoop-cli kids family unlock` を実行して合言葉を入れる（35分有効）
+
+Cookie と合言葉はパスワードと同じ扱いです。AI エージェントのチャットに貼ったり、コマンド引数に書いたりしないでください。
+エージェントの中から本人が入力するには、Claude Code ならプロンプトで `! garoop-cli session-set-cookie`、Codex なら別のターミナルで実行します。
+ログイン情報は `~/.config/garoop-cli/tokens/` に保存されるので、どのディレクトリからエージェントを動かしても同じログインを使えます（`GAROOP_CLI_TOKEN_DIR` で変更可。以前の `./tokens/` があればそちらを優先）。
+ログインが切れたら `me` がそう伝えるので、2〜3 をやり直します。
+
 ### 書き込みの仕組み
 - すべての書き込み系は既定で dry-run。`--execute` を付けたときだけ実行します
-- **ログイン**: ブラウザでログイン後の `sessionId` Cookie を保存して使います
-  ```bash
-  garooptv-cli session-set-cookie --cookie "sessionId=..."
-  garoop-cli me   # ログイン確認
-  ```
+- **ログイン**: ブラウザでログイン後の `sessionId` Cookie を保存して使います（後述「はじめての準備」）
 - **提出物（課題・ミッション成果物・ゲーム・小説・番組提案）**: api.garoop.jp の提出受付に送られ、スタッフが確認します。ファイルは自分専用の領域（`uploads/users/<userId>/`）にアップロードされます
 - **おうちミッション**: Garoop Pay で子どもを登録済みであることが前提です。登録・承認・削除には保護者の合言葉が必要です（`kids family unlock`。35分有効。`GAROOP_PARENT_PASSCODE` か標準入力で渡し、引数では渡しません）
 - **スタッフ用**: `GAROOP_ADMIN_SECRET`（kids_api の `GRAPHQL_ADMIN_SECRET`）が必要です。公開（garoop-data へのPR）には `gh auth login` か `GITHUB_TOKEN` も必要です。garoop-data は公開リポジトリなので、子どもの個人情報を含めないでください
@@ -362,7 +368,8 @@ garoop-cli land game publish ./my-game --id space-jump --title "スペースジ�
 ### 追加の環境変数
 ```bash
 export GAROOP_GRAPHQL_ENDPOINT=https://api.garoop.jp/query  # 既定値
-export GAROOP_COOKIE="sessionId=..."                      # session-set-cookie の代わり
+export GAROOP_COOKIE="sessionId=..."                      # session-set-cookie の代わり（CI など）
+export GAROOP_CLI_TOKEN_DIR=~/.config/garoop-cli/tokens    # ログイン情報の保存先（既定値）
 export GAROOP_PARENT_PASSCODE=...                         # kids family unlock 用（任意）
 export GAROOP_ADMIN_SECRET=...                            # スタッフ用
 export GAROOP_DATA_BASE_URL=https://data.garoop.jp
@@ -389,7 +396,7 @@ garoop-cli auth youtube login --redirect-uri http://127.0.0.1:18767/auth/youtube
 garoop-cli auth youtube refresh
 
 ## OSS公開・配布
-- ソース公開後は `go install`、GitHub Releases、Homebrew で配布できます
+- GitHub Releases、Homebrew、install.sh で配布しています
 - リリース手順は `docs/OSS_RELEASE.md:1` にまとめています
 - ローカル確認は `make build`、タグ付き配布前の確認は `make release-check` を使えます
 ```

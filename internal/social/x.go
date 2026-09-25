@@ -46,7 +46,7 @@ func NewXClient(execute bool) (*XClient, error) {
 			AccessToken       string `json:"access_token"`
 			AccessTokenSecret string `json:"access_token_secret"`
 		}
-		if err := authutil.LoadJSON("tokens/x.json", &token); err == nil {
+		if err := authutil.LoadJSON(authutil.TokenPath("x.json"), &token); err == nil {
 			if consumerKey == "" {
 				consumerKey = strings.TrimSpace(token.ConsumerKey)
 			}
@@ -62,7 +62,7 @@ func NewXClient(execute bool) (*XClient, error) {
 		}
 	}
 	if consumerKey == "" || consumerSecret == "" || accessToken == "" || accessSecret == "" {
-		return nil, fmt.Errorf("Xの実行には環境変数か tokens/x.json の認証情報が必要です")
+		return nil, fmt.Errorf("Xの実行には環境変数か %s の認証情報が必要です", authutil.TokenPath("x.json"))
 	}
 
 	config := oauth1.NewConfig(consumerKey, consumerSecret)

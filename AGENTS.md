@@ -45,9 +45,10 @@
 | （スタッフ）「承認したゲーム/小説を公開して」 | `land game publish` / `novel publish`（garoop-data へPR） |
 
 ## Garoopサービス操作の注意
-- ログインが必要な操作の前に `garoop-cli me` でセッションを確認する。未ログインならユーザーに `sessionId` Cookie の用意を頼む（パスワードを聞かない）
+- ログインが必要な操作の前に `garoop-cli me` でセッションを確認する。未ログイン・期限切れなら、ユーザー本人に自分の端末で `garoop-cli session-set-cookie` を実行してもらう（README「はじめての準備」を案内。Claude Code なら `! garoop-cli session-set-cookie`）。パスワードや Cookie をチャットで受け取らない・引数に書かない
+- 閲覧系（`tv schedule`、`kids mission list`、`novel list` など）はログイン不要。まずこれで疎通を確かめてよい
 - 提出系はまず dry-run の出力（送る内容・ファイル）をユーザーに見せてから `--execute`
-- 保護者の合言葉はコマンド引数に書かない。`kids family unlock` を実行し、ユーザー本人に標準入力で入れてもらうか `GAROOP_PARENT_PASSCODE` を使う。エージェントが合言葉を保存・表示しない
+- 保護者の合言葉はコマンド引数に書かない。`kids family unlock` はユーザー本人に自分の端末で実行してもらう（35分有効）。エージェントが合言葉を聞き出す・標準入力に流し込む・保存・表示することはしない
 - `kids family review --approve` はガル（おこづかい相当）が動く。ユーザーの明示的な指示がある場合だけ実行する
 - スタッフ用コマンド（`submission list/review`、`* publish`、`tv schedule-add`）は `GAROOP_ADMIN_SECRET` を持つスタッフの依頼でのみ使う
 - garoop-data は**公開リポジトリ**。PR の内容も公開される。子どもの実名・学校名・住所・顔写真など個人情報を入れない
